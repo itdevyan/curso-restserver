@@ -8,6 +8,7 @@ const {
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
+const { esRoleValido } = require("../helpers/db-validators");
 
 const router = Router();
 
@@ -28,7 +29,10 @@ router.post(
       "El password debe contener al menos 6 caracteres"
     ).isLength({ min: 6 }),
     check("correo", "El correo no es válido").isEmail(),
-    check("rol", "El rol debe ser válido").isIn(["ADMIN_ROLE", "USER_ROLE"]),
+    // Otra forma manual de validar enum
+    // check("rol", "El rol debe ser válido").isIn(["ADMIN_ROLE", "USER_ROLE"]),
+    // (rol) => esRoleValido(rol) es lo mismo que enviar esRoleValido solo
+    check("rol").custom(esRoleValido),
     validarCampos,
   ],
   usuariosPost
