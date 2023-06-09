@@ -32,5 +32,12 @@ const UsuarioSchema = Schema({
   },
 });
 
+// Para sobrescribir el metodo que devuelve el objeto cuando se llama
+// desde el controlador
+UsuarioSchema.methods.toJSON = function () {
+  const { __v, password, ...restoAtributosUsuario } = this.toObject();
+  return restoAtributosUsuario;
+};
+
 // El nombre 'Usuario' es el nombre de la colección, DEBE estar en singular, ya que internamente le agregará la s (Usuarios)
 module.exports = model("Usuario", UsuarioSchema);
