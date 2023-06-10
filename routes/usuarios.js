@@ -8,13 +8,27 @@ const {
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
-const { esRoleValido } = require("../helpers/db-validators");
+const {
+  esRoleValido,
+  elEmailExiste,
+  existeUsuarioPorId,
+} = require("../helpers/db-validators");
 
 const router = Router();
 
 router.get("/", usuariosGet);
 
-router.put("/:id", usuariosPut);
+router.put(
+  "/:id",
+  [
+    // validator se da cuenta de si es un parametro de ruta
+    check("id", "No es un ID válido").isMongoId(),
+    check("id").custom(existeUsuarioPorId),
+    check("rol").custom(esRoleValido),
+    validarCampos,
+  ],
+  usuariosPut
+);
 
 // Si mandas 2 argumentos, es la ruta y controlador
 // Si mandas 3 argumentos, es la ruta, middleware y controlador
@@ -29,6 +43,7 @@ router.post(
       "El password debe contener al menos 6 caracteres"
     ).isLength({ min: 6 }),
     check("correo", "El correo no es válido").isEmail(),
+    check("correo").custom((correo) => elEmailExiste(correo)),
     // Otra forma manual de validar enum
     // check("rol", "El rol debe ser válido").isIn(["ADMIN_ROLE", "USER_ROLE"]),
     // (rol) => esRoleValido(rol) es lo mismo que enviar esRoleValido solo
