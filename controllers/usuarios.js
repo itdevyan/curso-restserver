@@ -7,7 +7,24 @@ const { request, response } = require("express");
 const Usuario = require("../models/usuario");
 const bcryptjs = require("bcryptjs");
 
-const usuariosGet = (req = request, res = response) => {
+const usuariosGet = async (req = request, res = response) => {
+  //TODO: validar que sean number positivos
+  const { limite = 5, desde = 0 } = req.query;
+
+  const query = { estado: true };
+
+  const [total, usuarios] = await Promise.all([
+    Usuario.countDocuments(query),
+    Usuario.find(query).skip(Number(desde)).limit(Number(limite)),
+  ]);
+
+  res.json({
+    total,
+    usuarios,
+  });
+};
+
+const usuariosGetQueryParams = (req = request, res = response) => {
   const query = req.query;
   const { q, oam = "no name" } = query;
 
@@ -85,16 +102,25 @@ const usuariosPatch = (req = request, res = response) => {
   });
 };
 
-const usuariosDelete = (req = request, res = response) => {
-  // (Redundante, solo para ayuda)
-  //   res.send("Hello world");
-  res.json({
-    msg: "delete API - controlador",
-  });
+const usuariosDelete = async (req = request, res = response) => {
+  const { id } = req.params;
+
+  // Borrar fisicamente
+  //const usuario = await Usuario.findByIdAndDelete(id);
+
+  // Desactivandolo
+  const usuario = await Usuario.findByIdAndUpdate(
+    id,
+    { estado: false },
+    { new: true }
+  );
+
+  res.json(usuario);
 };
 
 module.exports = {
   usuariosGet,
+  usuariosGetQueryParams,
   usuariosDelete,
   usuariosPatch,
   usuariosPost,
