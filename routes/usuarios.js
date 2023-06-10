@@ -5,6 +5,7 @@ const {
   usuariosPatch,
   usuariosPost,
   usuariosPut,
+  usuariosGetQueryParams,
 } = require("../controllers/usuarios");
 const { check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validar-campos");
@@ -17,6 +18,8 @@ const {
 const router = Router();
 
 router.get("/", usuariosGet);
+
+router.get("/queryParams/", usuariosGetQueryParams);
 
 router.put(
   "/:id",
@@ -53,7 +56,15 @@ router.post(
   usuariosPost
 );
 
-router.delete("/", usuariosDelete);
+router.delete(
+  "/:id",
+  [
+    check("id", "No es un ID válido").isMongoId(),
+    check("id").custom(existeUsuarioPorId),
+    validarCampos,
+  ],
+  usuariosDelete
+);
 
 router.patch("/", usuariosPatch);
 
