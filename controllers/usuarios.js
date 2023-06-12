@@ -104,6 +104,8 @@ const usuariosPatch = (req = request, res = response) => {
 
 const usuariosDelete = async (req = request, res = response) => {
   const { id } = req.params;
+  // obtener el atributo del middleware
+  // const usuarioToken = req.usuarioToken;
 
   // Borrar fisicamente
   //const usuario = await Usuario.findByIdAndDelete(id);
