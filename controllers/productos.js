@@ -9,7 +9,8 @@ const obtenerProductos = async (req = request, res = response) => {
     Producto.find(query)
       .skip(Number(desde))
       .limit(Number(limite))
-      .populate("usuario", ["uid", "nombre", "correo"]),
+      .populate("usuario", ["uid", "nombre", "correo"])
+      .populate("categoria", ["nombre"]),
   ]);
   res.json({
     total,
@@ -18,9 +19,30 @@ const obtenerProductos = async (req = request, res = response) => {
 };
 
 const obtenerProductoPorId = async (req = request, res = response) => {
-  res.json({
-    msg: "work!",
-  });
+  const { id } = req.params;
+  const producto = await Producto.findById(id).populate([
+    {
+      path: "usuario",
+      transform: (user, id) =>
+        user == null
+          ? id
+          : {
+              nombre: user.nombre,
+            },
+    },
+    {
+      path: "categoria",
+      transform: (cat, id) =>
+        cat == null
+          ? id
+          : {
+              nombre: cat.nombre,
+            },
+    },
+  ]);
+  // .populate("categoria", ["nombre"]);
+
+  res.json(producto);
 };
 
 const crearProducto = async (req = request, res = response) => {
@@ -32,8 +54,8 @@ const crearProducto = async (req = request, res = response) => {
     disponible,
     descripcion,
     estado: true,
-    usuario: req.categoria._id,
-    categoria: req.usuarioToken._id,
+    usuario: req.usuarioToken._id,
+    categoria: req.categoria._id,
   };
 
   const producto = new Producto(dataRq);
@@ -43,15 +65,32 @@ const crearProducto = async (req = request, res = response) => {
 };
 
 const actualizarProducto = async (req = request, res = response) => {
-  res.json({
-    msg: "work!",
+  const { id } = req.params;
+  const { estado, usuario, categoria, ...resto } = req.body;
+
+  if (Object.keys(resto).length === 0) {
+    res.status(400).json({
+      msg: "Se necesitan parametros para actualizar producto",
+    });
+  }
+
+  const producto = await Producto.findByIdAndUpdate(id, resto, { new: true });
+
+  res.status(200).json({
+    producto,
   });
 };
 
 const eliminarProducto = async (req = request, res = response) => {
-  res.json({
-    msg: "work!",
-  });
+  const { id } = req.params;
+
+  const producto = await Producto.findByIdAndUpdate(
+    id,
+    { estado: false },
+    { new: true }
+  );
+
+  res.json(producto);
 };
 
 module.exports = {
