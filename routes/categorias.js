@@ -15,8 +15,6 @@ const {
 const { check } = require("express-validator");
 const {
   existeCategoriaPorId,
-  existeUsuarioPorId,
-  esRoleValido,
   existeNombreCategoria,
 } = require("../helpers/db-validators");
 
