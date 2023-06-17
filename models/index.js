@@ -2,6 +2,7 @@ const Categoria = require("./categoria");
 const Role = require("./role");
 const Server = require("./server");
 const Usuario = require("./usuario");
+const Producto = require("./producto");
 
 /* Otra forma de exportar 
     module.exports = require("./categoria");
@@ -15,4 +16,5 @@ module.exports = {
   Role,
   Server,
   Usuario,
+  Producto,
 };
