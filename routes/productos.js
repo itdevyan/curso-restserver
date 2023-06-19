@@ -35,9 +35,10 @@ router.post(
   [
     validarJWT,
     check("nombre", "El campo nombre es obligatorio").not().isEmpty(),
-    check("precio", "El campo precio es obligatorio").not().isEmpty(),
-    check("categoriaId", "El campo categoriaID es obligatorio").not().isEmpty(),
-    check("categoriaId", "La categoría no tiene un ID válido").isMongoId(),
+    check("categoria", "La categoría no tiene un válido").isMongoId(),
+    check("categoria", "El campo categoria es obligatorio").not().isEmpty(),
+    // podría haber sido también
+    // check('categoria').custom ( existeCategoriaPorId );
     validarCategoria,
     tieneRole("ADMIN_ROLE", "USER_ROLE", "VENTAS_ROLE"),
     validarCampos,
