@@ -48,14 +48,19 @@ const obtenerProductoPorId = async (req = request, res = response) => {
 const crearProducto = async (req = request, res = response) => {
   const { nombre, precio, disponible, descripcion } = req.body;
 
+  // También se podría sacar el resto de lo que se quiere grabar
+  // const {  estado, usuario, ...resto } = req.body;
+
   const dataRq = {
+    // ...resto
     nombre,
     precio,
     disponible,
     descripcion,
     estado: true,
     usuario: req.usuarioToken._id,
-    categoria: req.categoria._id,
+    categoria: req.categoria._id, // NO ES NECESARIO si se controlara el id en el middleware,
+    // e iría en dentro el ...resto
   };
 
   const producto = new Producto(dataRq);
