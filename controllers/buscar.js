@@ -15,6 +15,23 @@ const buscarUsuarios = async (termino = "", res = response) => {
       results: usuario ? [usuario] : [],
     });
   }
+
+  const regex = new RegExp(termino, "i");
+
+  const usuarios = await Usuario.find({
+    $or: [{ nombre: regex }, { correo: regex }],
+    $and: [{ estado: true }],
+  });
+
+  // Para contar
+  // const usuariosContador = await Usuario.cout({
+  //   $or: [{ nombre: regex }, { correo: regex }],
+  //   $and: [{ estado: true }],
+  // });
+
+  res.json({
+    results: usuarios,
+  });
 };
 
 const buscar = (req = require, res = response) => {
@@ -29,6 +46,7 @@ const buscar = (req = require, res = response) => {
   switch (coleccion) {
     case "usuarios":
       buscarUsuarios(termino, res);
+      break;
     case "categorias":
       break;
     case "productos":
